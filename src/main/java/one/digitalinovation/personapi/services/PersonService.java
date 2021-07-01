@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
+@Service //Gerenciar uma classe do tipo serviço
 @AllArgsConstructor(onConstructor = @__(@Autowired))
 public class PersonService {
 
@@ -31,15 +31,14 @@ public class PersonService {
     }
 
     public PersonDTO findById(Long id) throws PersonNotFoundException {
-        Person person = personRepository.findById(id)
-                .orElseThrow(() -> new PersonNotFoundException(id));
+        Person person = virifyIfExists(id);
 
         return personMapper.toDTO(person);
     }
 
     public List<PersonDTO> listAll() {
         List<Person> people = personRepository.findAll();
-        return people.stream()
+        return people.stream() //Stream tranformação de dados em collections
                 .map(personMapper::toDTO)
                 .collect(Collectors.toList());
     }
@@ -57,8 +56,7 @@ public class PersonService {
     }
 
     public void delete(Long id) throws PersonNotFoundException {
-        personRepository.findById(id)
-                .orElseThrow(() -> new PersonNotFoundException(id));
+        virifyIfExists(id);
 
         personRepository.deleteById(id);
     }
@@ -67,5 +65,10 @@ public class PersonService {
         return MessageResponseDTO.builder()
                 .message(s + id2)
                 .build();
+    }
+
+    private Person virifyIfExists(Long id) throws PersonNotFoundException{
+        return personRepository.findById(id)
+                .orElseThrow(() -> new PersonNotFoundException(id));
     }
 }

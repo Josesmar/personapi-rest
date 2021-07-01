@@ -9,7 +9,7 @@ import org.mapstruct.Mapping;
 public interface PersonMapper {
 
     @Mapping(target = "birthDate", source = "birthDate", dateFormat = "dd-MM-yyyy")
-    Person toModel(PersonDTO dto);
+    Person toModel(PersonDTO dto); //converter DTO para objeto de banco de dados usar o toModel Tipop String para Data
 
     PersonDTO toDTO(Person dto);
 }
