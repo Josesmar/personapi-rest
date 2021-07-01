@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service //Gerenciar uma classe do tipo serviço
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@AllArgsConstructor(onConstructor = @__(@Autowired)) //Substitui o construtor padrão
 public class PersonService {
 
     private final PersonRepository personRepository;
@@ -31,7 +31,7 @@ public class PersonService {
     }
 
     public PersonDTO findById(Long id) throws PersonNotFoundException {
-        Person person = virifyIfExists(id);
+        Person person = verifyIfExists(id);
 
         return personMapper.toDTO(person);
     }
@@ -56,7 +56,7 @@ public class PersonService {
     }
 
     public void delete(Long id) throws PersonNotFoundException {
-        virifyIfExists(id);
+        verifyIfExists(id);
 
         personRepository.deleteById(id);
     }
@@ -67,8 +67,20 @@ public class PersonService {
                 .build();
     }
 
-    private Person virifyIfExists(Long id) throws PersonNotFoundException{
+    private Person verifyIfExists(Long id) throws PersonNotFoundException{
         return personRepository.findById(id)
                 .orElseThrow(() -> new PersonNotFoundException(id));
+    }
+
+    public MessageResponseDTO updateById(Long id, PersonDTO personDTO) throws PersonNotFoundException{
+        verifyIfExists(id);
+
+        Person personToSave = personMapper.toModel(personDTO);
+
+        Person savedPerson = personRepository.save(personToSave);
+        return MessageResponseDTO
+                .builder()
+                .message("Created person with ID" + savedPerson.getId())
+                .build();
     }
 }
